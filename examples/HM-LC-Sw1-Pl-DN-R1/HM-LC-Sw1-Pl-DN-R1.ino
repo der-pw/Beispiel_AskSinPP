@@ -17,11 +17,11 @@
 // we use a Pro Mini
 // Arduino pin for the LED
 // D4 == PIN 4 on Pro Mini
-#define LED_PIN 4
+#define LED_PIN           4
 // Arduino pin for the config button
 // B0 == PIN 8 on Pro Mini
 #define CONFIG_BUTTON_PIN 8
-#define LED_PIN           4
+
 #define OUT_LONG_PIN      5
 #define OUT_SHORT_PIN     6
 
@@ -35,8 +35,8 @@ using namespace as;
 
 // define all device properties
 const struct DeviceInfo PROGMEM devinfo = {
-  {0x01, 0xd8, 0x09},     // Device ID
-  "JPLCSw1002",           // Device Serial
+  {0x01, 0xd8, 0x89},     // Device ID
+  "JPLCSw1089",           // Device Serial
   {0x00,0xd8},            // Device Model
   0x26,                   // Firmware Version
   as::DeviceType::Switch, // Device Type
@@ -75,27 +75,30 @@ class MySwitchChannel : public ActorChannel<Hal,SwitchList1,SwitchList3,PEERS_PE
 
     virtual void trigger (__attribute__ ((unused)) AlarmClock& clock) {
       switch (loopcount) {
-        case 0:
+        case 0:                        // turn motor in forward direction
           ArduinoPins::setHigh(pin_A);
-          ArduinoPins::setLow (pin_B);
-          set(millis2ticks(1000));
+          set(millis2ticks(800));
           break;
-        case 1:
+        case 1:                       // pause motor for 200ms
           ArduinoPins::setLow (pin_A);
+          ArduinoPins::setLow (pin_B);
+          set(millis2ticks(200));
+          break;          
+        case 2:                       // turn motor in opposite direction
           ArduinoPins::setHigh(pin_B);
-          set(millis2ticks(500));
+          set(millis2ticks(300));
         break;  
-        case 2:
+        case 3:                       // both high to stop the motor hard
           ArduinoPins::setHigh(pin_A);
-          ArduinoPins::setHigh(pin_B);
           set(millis2ticks(100));
-        case 3:
+          break;
+        case 4:                       // turn motor off
           ArduinoPins::setLow (pin_A);
           ArduinoPins::setLow (pin_B);
         break;
       }
 
-      if (loopcount < 3) clock.add(*this);
+      if (loopcount < 4) clock.add(*this);
       
       loopcount++;   
     }
@@ -121,7 +124,7 @@ public:
   }
 
   virtual void switchState(__attribute__((unused)) uint8_t oldstate,uint8_t newstate,__attribute__((unused)) uint32_t delay) {
-    if (( newstate == AS_CM_JT_ON ) || ( newstate == AS_CM_JT_OFF )) {
+    if (( newstate == AS_CM_JT_ON ) ) {
       pincontrol.start();
     }
     this->changed(true);

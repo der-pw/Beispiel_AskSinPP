@@ -35,8 +35,8 @@ using namespace as;
 
 // define all device properties
 const struct DeviceInfo PROGMEM devinfo = {
-  {0x01, 0xd8, 0x89},     // Device ID
-  "JPLCSw1089",           // Device Serial
+  {0x01, 0xd8, 0x01},     // Device ID
+  "JPLCSw1001",           // Device Serial
   {0x00,0xd8},            // Device Model
   0x26,                   // Firmware Version
   as::DeviceType::Switch, // Device Type
@@ -124,7 +124,7 @@ public:
   }
 
   virtual void switchState(__attribute__((unused)) uint8_t oldstate,uint8_t newstate,__attribute__((unused)) uint32_t delay) {
-    if (( newstate == AS_CM_JT_ON ) ) {
+    if (( newstate == AS_CM_JT_ON ) ) {  // just spray if device turn on
       pincontrol.start();
     }
     this->changed(true);

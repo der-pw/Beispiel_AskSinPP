@@ -77,12 +77,12 @@ class MySwitchChannel : public ActorChannel<Hal,SwitchList1,SwitchList3,PEERS_PE
       switch (loopcount) {
         case 0:                        // turn motor in forward direction
           ArduinoPins::setHigh(pin_A);
-          set(millis2ticks(800));
+          set(millis2ticks(600));
           break;
         case 1:                       // pause motor for 200ms
           ArduinoPins::setLow (pin_A);
           ArduinoPins::setLow (pin_B);
-          set(millis2ticks(200));
+          set(millis2ticks(100));
           break;          
         case 2:                       // turn motor in opposite direction
           ArduinoPins::setHigh(pin_B);
